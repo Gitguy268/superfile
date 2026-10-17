@@ -60,7 +60,7 @@
               ## golang
               delve
               go-outline
-              go
+              go_1_26
               golangci-lint
               gopkgs
               gopls
