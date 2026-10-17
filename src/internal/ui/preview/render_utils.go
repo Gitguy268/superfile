@@ -41,9 +41,7 @@ func getBatSyntaxHighlightedContent(
 }
 
 func buildBatArgs(itemPath string, previewLine int, batFlags []string) []string {
-	batArgs := make([]string, 0, len(batFlags)+3)
-	batArgs = append(batArgs, itemPath)
-	batArgs = append(batArgs, batFlags...)
+	batArgs := append([]string{itemPath}, batFlags...)
 	// --line-range <:m>: only read from line 1 to line "m"
 	return append(batArgs, "--line-range", fmt.Sprintf(":%d", previewLine))
 }
