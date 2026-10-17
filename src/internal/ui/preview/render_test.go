@@ -173,3 +173,14 @@ func TestFilePreviewRenderWithDimensions(t *testing.T) {
 		})
 	}
 }
+
+// #933: groff's `*.[1-9]` glob matches binaries such as `bin.3`; their raw bytes must not be rendered
+func TestBinaryWithLexerExtensionIsNotRendered(t *testing.T) {
+	filePath := filepath.Join(t.TempDir(), "bin.3")
+	require.NoError(t, os.WriteFile(filePath, []byte("\x7fELF\x02\x01\x00\x00\x1b[2J\x1b]0;x\x07"), 0o644))
+
+	m := New()
+	render, _ := m.RenderWithPath(filePath, 20, 2, 20)
+	assert.NotContains(t, render, "\x1b[2J")
+	assert.NotContains(t, render, "ELF")
+}

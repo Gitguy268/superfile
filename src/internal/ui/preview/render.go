@@ -10,6 +10,7 @@ import (
 	"path/filepath"
 	"slices"
 	"sort"
+	"strings"
 
 	"charm.land/lipgloss/v2"
 	"github.com/alecthomas/chroma/v2/lexers"
@@ -115,6 +116,11 @@ func (m *Model) renderTextPreview(r *rendering.Renderer, itemPath string,
 
 	if fileContent == "" {
 		return r.AddLines(common.FilePreviewEmptyText).Render()
+	}
+
+	// Lexer globs like groff's `*.[1-9]` also match binaries; NUL never appears in real text
+	if format != nil && strings.ContainsRune(fileContent, 0) {
+		return r.AddLines(common.FilePreviewUnsupportedFormatText).Render()
 	}
 
 	if format != nil {
