@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"image/color"
+	"io/fs"
 	"log/slog"
 	"os"
 	"path/filepath"
@@ -326,12 +327,15 @@ func LoadAllDefaultConfig(content embed.FS) {
 	}
 
 	if string(currentThemeVersion) == variable.CurrentVersion {
-		// We don't need to update themes as its already up to date
+		// Themes are up to date, but add bundled themes that are new since they were written
+		if err = WriteThemeFiles(content, true); err != nil {
+			slog.Error("Error while writing missing theme files", "error", err)
+		}
 		return
 	}
 
 	// Write theme files to theme directory
-	err = WriteThemeFiles(content)
+	err = WriteThemeFiles(content, false)
 	if err != nil {
 		slog.Error("Error while writing default theme directories", "error", err)
 		return
@@ -370,7 +374,9 @@ func LoadConfigStringGlobals(content embed.FS) error {
 	return nil
 }
 
-func WriteThemeFiles(content embed.FS) error {
+// WriteThemeFiles writes the bundled themes to the theme folder. With onlyMissing,
+// existing theme files are left untouched.
+func WriteThemeFiles(content fs.FS, onlyMissing bool) error {
 	_, err := os.Stat(variable.ThemeFolder)
 
 	if os.IsNotExist(err) {
@@ -380,7 +386,7 @@ func WriteThemeFiles(content embed.FS) error {
 		}
 	}
 
-	files, err := content.ReadDir(variable.EmbedThemeDir)
+	files, err := fs.ReadDir(content, variable.EmbedThemeDir)
 	if err != nil {
 		slog.Error("Error reading theme directory from embed", "error", err)
 		return err
@@ -390,14 +396,20 @@ func WriteThemeFiles(content embed.FS) error {
 		if file.IsDir() {
 			continue
 		}
+		dst := filepath.Join(variable.ThemeFolder, file.Name())
+		if onlyMissing {
+			if _, statErr := os.Stat(dst); statErr == nil {
+				continue
+			}
+		}
 		// This will not break in windows. This is a relative path for Embed FS. It uses "/" only
-		src, err := content.ReadFile(variable.EmbedThemeDir + "/" + file.Name())
+		src, err := fs.ReadFile(content, variable.EmbedThemeDir+"/"+file.Name())
 		if err != nil {
 			slog.Error("Error reading theme file from embed", "error", err)
 			return err
 		}
 
-		curThemeFile, err := os.Create(filepath.Join(variable.ThemeFolder, file.Name()))
+		curThemeFile, err := os.Create(dst)
 		if err != nil {
 			slog.Error("Error creating theme file from embed", "error", err)
 			return err
