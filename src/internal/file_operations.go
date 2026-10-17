@@ -77,6 +77,17 @@ func moveElement(src, dst string) error {
 	return nil
 }
 
+// shortcut: Lstat then Rename can race with another writer; only used where the OS or
+// filesystem has no atomic no-replace rename
+func renameIfAbsent(src, dst string) error {
+	if _, err := os.Lstat(dst); err == nil {
+		return &os.LinkError{Op: "rename", Old: src, New: dst, Err: os.ErrExist}
+	} else if !os.IsNotExist(err) {
+		return err
+	}
+	return os.Rename(src, dst)
+}
+
 func copyElementNoReplace(src, dst string) (err error) {
 	stagingDir, err := os.MkdirTemp(filepath.Dir(dst), ".superfile-move-")
 	if err != nil {

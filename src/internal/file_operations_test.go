@@ -58,3 +58,20 @@ func TestMoveElementDoesNotReplaceConcurrentDestination(t *testing.T) {
 	require.NoError(t, err)
 	assert.Equal(t, contentBySource[succeeded.source], string(destinationContents))
 }
+
+func TestRenameIfAbsent(t *testing.T) {
+	dir := t.TempDir()
+	src, dst := filepath.Join(dir, "src.txt"), filepath.Join(dir, "dst.txt")
+	require.NoError(t, os.WriteFile(src, []byte("src"), 0o644))
+	require.NoError(t, os.WriteFile(dst, []byte("dst"), 0o644))
+
+	require.ErrorIs(t, renameIfAbsent(src, dst), os.ErrExist)
+	data, err := os.ReadFile(dst)
+	require.NoError(t, err)
+	assert.Equal(t, "dst", string(data), "existing destination must be kept")
+
+	free := filepath.Join(dir, "free.txt")
+	require.NoError(t, renameIfAbsent(src, free))
+	assert.FileExists(t, free)
+	assert.NoFileExists(t, src)
+}

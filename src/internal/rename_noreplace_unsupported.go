@@ -2,8 +2,6 @@
 
 package internal
 
-import "errors"
-
-func renameNoReplace(_, _ string) error {
-	return errors.ErrUnsupported
+func renameNoReplace(src, dst string) error {
+	return renameIfAbsent(src, dst)
 }
