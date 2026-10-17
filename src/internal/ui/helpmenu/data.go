@@ -229,6 +229,16 @@ func getData() []hotkeydata { //nolint: funlen // This should be self contained
 			hotkeyWorkType: globalType,
 		},
 		{
+			hotkey:         common.Hotkeys.CopyItemsToNextPanel,
+			description:    "Copy focused or selected items into the next file panel",
+			hotkeyWorkType: globalType,
+		},
+		{
+			hotkey:         common.Hotkeys.MoveItemsToNextPanel,
+			description:    "Move focused or selected items into the next file panel",
+			hotkeyWorkType: globalType,
+		},
+		{
 			hotkey:         common.Hotkeys.DeleteItems,
 			description:    "Delete selected items",
 			hotkeyWorkType: globalType,

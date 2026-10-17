@@ -27,7 +27,8 @@ func (msg BaseMessage) GetReqID() int {
 type PasteOperationMsg struct {
 	BaseMessage
 
-	state processbar.ProcessState
+	state         processbar.ProcessState
+	keepClipboard bool // the pasted items did not come from the internal clipboard
 }
 
 func NewPasteOperationMsg(state processbar.ProcessState, reqID int) PasteOperationMsg {
@@ -40,7 +41,8 @@ func NewPasteOperationMsg(state processbar.ProcessState, reqID int) PasteOperati
 }
 
 func (msg PasteOperationMsg) ApplyToModel(m *model) tea.Cmd {
-	if (msg.state == processbar.Failed || msg.state == processbar.Successful) && m.clipboard.IsCut() {
+	if !msg.keepClipboard && (msg.state == processbar.Failed || msg.state == processbar.Successful) &&
+		m.clipboard.IsCut() {
 		m.clipboard.Reset(false)
 	}
 	return nil

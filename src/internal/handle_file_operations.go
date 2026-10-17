@@ -268,10 +268,9 @@ func (m *model) copyMultipleItem(cut bool) {
 	m.clipboard.SetItems(items)
 }
 
-// systemClipboardSourcePaths returns the paths that a "copy to system
-// clipboard" action should act on: the selected items in select mode, otherwise
-// the focused item.
-func (m *model) systemClipboardSourcePaths() []string {
+// actionSourcePaths returns the paths a copy action should act on: the selected
+// items in select mode, otherwise the focused item.
+func (m *model) actionSourcePaths() []string {
 	panel := m.getFocusedFilePanel()
 	if panel.Empty() {
 		return nil
@@ -294,7 +293,7 @@ func (m *model) getCopyToSystemClipboardCmd() tea.Cmd {
 				systemClipboardUnavailableHint(), notify.NoAction), reqID)
 		}
 	}
-	paths := m.systemClipboardSourcePaths()
+	paths := m.actionSourcePaths()
 	if len(paths) == 0 {
 		return nil
 	}
@@ -342,7 +341,7 @@ func (m *model) getPasteFromSystemClipboardCmd() tea.Cmd {
 			return NewNotifyModalMsg(notify.New(true, "Invalid paste location", vErr.Error(), notify.NoAction),
 				reqID)
 		}
-		return m.executePasteOperation(&m.processBarModel, panelLocation, existing, cut, reqID)
+		return m.executePasteOperation(&m.processBarModel, panelLocation, existing, cut, false, reqID)
 	}
 }
 
@@ -353,6 +352,30 @@ func systemClipboardUnavailableHint() string {
 		return "Install wl-clipboard (Wayland) or xclip (X11) to copy/paste files to and from the system file manager."
 	}
 	return "System clipboard file transfer is not supported in this environment."
+}
+
+// getCopyToNextPanelCmd copies or moves the focused or selected items into the
+// next file panel's directory, without touching the clipboard (#135)
+func (m *model) getCopyToNextPanelCmd(cut bool) tea.Cmd {
+	panels := m.fileModel.FilePanels
+	if len(panels) < 2 { //nolint:mnd // a destination panel needs a second panel
+		return nil
+	}
+	items := m.actionSourcePaths()
+	if len(items) == 0 {
+		return nil
+	}
+	dest := panels[(m.fileModel.FocusedPanelIndex+1)%len(panels)].Location
+
+	reqID := m.nextIoReqCnt()
+	slog.Debug("Submitting copy to next panel request", "id", reqID, "items cnt", len(items), "dest", dest, "cut", cut)
+	return func() tea.Msg {
+		if err := validatePasteOperation(dest, items, cut); err != nil {
+			return NewNotifyModalMsg(notify.New(true, "Invalid paste location", err.Error(), notify.NoAction),
+				reqID)
+		}
+		return m.executePasteOperation(&m.processBarModel, dest, items, cut, false, reqID)
+	}
 }
 
 func (m *model) getPasteItemCmd() tea.Cmd {
@@ -372,7 +395,7 @@ func (m *model) getPasteItemCmd() tea.Cmd {
 			return NewNotifyModalMsg(notify.New(true, "Invalid paste location", err.Error(), notify.NoAction),
 				reqID)
 		}
-		return m.executePasteOperation(&m.processBarModel, panelLocation, copyItems, cut, reqID)
+		return m.executePasteOperation(&m.processBarModel, panelLocation, copyItems, cut, true, reqID)
 	}
 }
 
@@ -461,11 +484,17 @@ func moveElementToAvailableName(source, destination string) error {
 	return fmt.Errorf("could not move %s without replacing an existing destination", source)
 }
 
+// fromClipboard: the items came from the internal clipboard, so a finished cut empties it
 func (m *model) executePasteOperation(processBarModel *processbar.Model,
-	panelLocation string, items []string, cut bool, reqID int,
+	panelLocation string, items []string, cut bool, fromClipboard bool, reqID int,
 ) tea.Msg {
+	finalizer := func(state processbar.ProcessState, reqID int) tea.Msg {
+		msg := NewPasteOperationMsg(state, reqID)
+		msg.keepClipboard = !fromClipboard
+		return msg
+	}
 	if len(items) == 0 {
-		return NewPasteOperationMsg(processbar.Cancelled, reqID)
+		return finalizer(processbar.Cancelled, reqID)
 	}
 	var operation processbar.OperationType
 	if cut {
@@ -480,9 +509,8 @@ func (m *model) executePasteOperation(processBarModel *processbar.Model,
 		getTotalFilesCnt(items), true)
 	if err != nil {
 		slog.Error("Cannot spawn a new process", "error", err)
-		return NewPasteOperationMsg(processbar.Failed, reqID)
+		return finalizer(processbar.Failed, reqID)
 	}
-	finalizer := func(state processbar.ProcessState, reqId int) tea.Msg { return NewPasteOperationMsg(state, reqId) }
 	processor := makePasteProcessor(p, processBarModel, panelLocation, cut)
 	msg := m.runFileProcessor(processor, finalizer, items, reqID)
 	return msg

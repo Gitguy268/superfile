@@ -57,6 +57,10 @@ permanently_delete_items = ['D', '']
 copy_to_system_clipboard = ['C', '']
 paste_from_system_clipboard = ['V', '']
 
+#-- Copy/move straight into the next file panel
+copy_items_to_next_panel = ['T', '']
+move_items_to_next_panel = ['M', '']
+
 #-- Archive Manipulation
 extract_file = ['ctrl+e', '']
 compress_file = ['ctrl+a', '']

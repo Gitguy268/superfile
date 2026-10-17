@@ -65,6 +65,49 @@ func TestCopy(t *testing.T) {
 	})
 }
 
+// #135: copy and move straight into the next panel, leaving a pending cut in the clipboard alone
+func TestCopyAndMoveToNextPanel(t *testing.T) {
+	curTestDir := filepath.Join(testDir, "TestCopyAndMoveToNextPanel")
+	dir1 := filepath.Join(curTestDir, "dir1")
+	dir2 := filepath.Join(curTestDir, "dir2")
+	file1 := filepath.Join(dir1, "file1.txt")
+	pendingCut := filepath.Join(dir1, "pending.txt")
+	utils.SetupDirectories(t, curTestDir, dir1, dir2)
+	utils.SetupFiles(t, file1, pendingCut)
+	t.Cleanup(func() {
+		os.RemoveAll(curTestDir)
+	})
+
+	t.Run("Only one panel", func(t *testing.T) {
+		m := defaultTestModel(dir1)
+		TeaUpdate(m, nil)
+		assert.Nil(t, m.getCopyToNextPanelCmd(false))
+	})
+
+	p := NewTestTeaProgWithEventLoop(t, defaultTestModel(dir1, dir2))
+	require.Equal(t, "file1.txt", p.getModel().getFocusedFilePanel().GetFocusedItem().Name)
+	p.getModel().clipboard.Reset(true)
+	p.getModel().clipboard.Add(pendingCut)
+
+	p.SendKey(common.Hotkeys.CopyItemsToNextPanel[0])
+	assert.Eventually(t, func() bool {
+		_, err := os.Lstat(filepath.Join(dir2, "file1.txt"))
+		return err == nil
+	}, DefaultTestTimeout, DefaultTestTick)
+	assert.FileExists(t, file1, "copy keeps the source")
+
+	p.SendKey(common.Hotkeys.MoveItemsToNextPanel[0])
+	assert.Eventually(t, func() bool {
+		_, err := os.Lstat(filepath.Join(dir2, "file1(1).txt"))
+		return err == nil
+	}, DefaultTestTimeout, DefaultTestTick)
+	assert.NoFileExists(t, file1, "move removes the source")
+
+	assert.True(t, p.getModel().clipboard.IsCut(), "pending cut must survive")
+	assert.Equal(t, []string{pendingCut}, p.getModel().clipboard.GetItems())
+	assert.FileExists(t, pendingCut)
+}
+
 func TestFileCreation(t *testing.T) {
 	// TODO Also add directory creation test to this
 	curTestDir := filepath.Join(testDir, "TestNaming")

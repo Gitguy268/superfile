@@ -158,6 +158,9 @@ type HotkeysType struct {
 	CopyToSystemClipboard    []string `toml:"copy_to_system_clipboard"`
 	PasteFromSystemClipboard []string `toml:"paste_from_system_clipboard"`
 
+	CopyItemsToNextPanel []string `toml:"copy_items_to_next_panel"`
+	MoveItemsToNextPanel []string `toml:"move_items_to_next_panel"`
+
 	ExtractFile  []string `toml:"extract_file"  comment:"compress and extract"`
 	CompressFile []string `toml:"compress_file"`
 
