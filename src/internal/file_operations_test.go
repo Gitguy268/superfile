@@ -1,7 +1,6 @@
 package internal
 
 import (
-	"errors"
 	"os"
 	"path/filepath"
 	"testing"
@@ -50,7 +49,7 @@ func TestMoveElementDoesNotReplaceConcurrentDestination(t *testing.T) {
 
 	require.NotEmpty(t, succeeded.source)
 	require.NotEmpty(t, rejected.source)
-	assert.True(t, errors.Is(rejected.err, os.ErrExist), rejected.err)
+	require.ErrorIs(t, rejected.err, os.ErrExist)
 	_, err := os.Stat(succeeded.source)
 	assert.True(t, os.IsNotExist(err))
 	assert.FileExists(t, rejected.source)
