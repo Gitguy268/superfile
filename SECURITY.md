@@ -1,6 +1,6 @@
 # Security Policy
 
-This is a fork of [yorukot/superfile](https://github.com/yorukot/superfile). Fixes land on the `main` branch of this fork; there are no separately supported release lines.
+This is a fork of [yorukot/superfile](https://github.com/yorukot/superfile). Fixes land on this fork's default branch; there are no separately supported release lines.
 
 ## Reporting a vulnerability
 

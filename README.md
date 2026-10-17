@@ -25,7 +25,7 @@ New in this fork:
 | Binaries whose names look like man pages (`bin.3`) are no longer previewed as text | [#933](https://github.com/yorukot/superfile/issues/933) |
 | File picker docs for `--chooser-file` | [#1023](https://github.com/yorukot/superfile/issues/1023) |
 
-Build it from source with `make build`; the binary ends up in `./bin/spf`.
+Build it from source with `./build.sh` (needs Go 1.26 or newer); the binary ends up in `./bin/spf`. `make build` also runs golangci-lint, so it needs that installed.
 
 </details>
 
