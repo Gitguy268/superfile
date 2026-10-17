@@ -168,6 +168,12 @@ head:
 
 ![Sugarplum theme preview showing sweet purple and pink color palette](../../../assets/theme/sugarplum.png)
 
+## Terminal
+
+- Theme name: `terminal`
+- Created by: https://github.com/KristianHolme
+- Uses your terminal's own 16-color palette (ANSI 0-15), so it follows whatever theme your terminal or OS sets. If panel backgrounds don't match your terminal background, set `transparent_background = true`.
+
 ## Tokyonight
 
 - Theme name: `tokyonight`

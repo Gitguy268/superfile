@@ -168,6 +168,12 @@ head:
 
 ![Sugarplum 主題預覽，顯示甜美的紫色與粉紅色調色盤](../../../../assets/theme/sugarplum.png)
 
+## Terminal
+
+- 主題名稱：`terminal`
+- 原作者：https://github.com/KristianHolme
+- 使用終端機本身的 16 色調色盤（ANSI 0-15），因此會跟隨終端機或作業系統的配色。若面板背景與終端機背景不一致，請設定 `transparent_background = true`。
+
 ## Tokyonight
 
 - 主題名稱：`tokyonight`
