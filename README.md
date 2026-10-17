@@ -1,3 +1,34 @@
+> [!NOTE]
+> This is a fork of [yorukot/superfile](https://github.com/yorukot/superfile) by Lucas Van De Weerd. It follows upstream and adds the fixes and features below. Everything else in this README is upstream's.
+
+<details>
+<summary><b>What this fork changes</b></summary>
+
+Merged from open upstream pull requests (original authors kept on the commits):
+
+| Change | Upstream issue / PR |
+| --- | --- |
+| Nix flake builds again (pins Go 1.26) | [#1634](https://github.com/yorukot/superfile/issues/1634) / [#1635](https://github.com/yorukot/superfile/pull/1635) |
+| `cd_on_quit` asks `spf` for the lastdir path, so it works with any install and `XDG_STATE_HOME` | [#1274](https://github.com/yorukot/superfile/issues/1274) / [#1629](https://github.com/yorukot/superfile/pull/1629) |
+| `bat_flags` config option for the bat previewer | [#1193](https://github.com/yorukot/superfile/issues/1193) / [#1584](https://github.com/yorukot/superfile/pull/1584) |
+| `theme = "auto"` picks `theme_light` or `theme_dark` from the terminal background | [#468](https://github.com/yorukot/superfile/issues/468) / [#1500](https://github.com/yorukot/superfile/pull/1500) |
+| Copy and paste files through the system clipboard (`C` / `V`) | [#741](https://github.com/yorukot/superfile/issues/741) / [#1607](https://github.com/yorukot/superfile/pull/1607) |
+| Cut and paste no longer overwrites a same-named file | [#1593](https://github.com/yorukot/superfile/pull/1593) |
+
+New in this fork:
+
+| Change | Upstream issue |
+| --- | --- |
+| Copy (`T`) or move (`M`) items straight into the next panel | [#135](https://github.com/yorukot/superfile/issues/135) |
+| `terminal` theme that uses your terminal's 16-color palette | [#681](https://github.com/yorukot/superfile/issues/681) |
+| Search and sort results show up at once in folders with 300+ files | [#928](https://github.com/yorukot/superfile/issues/928) |
+| Binaries whose names look like man pages (`bin.3`) are no longer previewed as text | [#933](https://github.com/yorukot/superfile/issues/933) |
+| File picker docs for `--chooser-file` | [#1023](https://github.com/yorukot/superfile/issues/1023) |
+
+Build it from source with `make build`; the binary ends up in `./bin/spf`.
+
+</details>
+
 <div align="center">
 
 <h4>superfile is supported by the community.</h4>
