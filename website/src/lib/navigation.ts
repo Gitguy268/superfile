@@ -36,6 +36,11 @@ export const navigation: NavNode[] = [
 				label: "Image Preview",
 				slug: "getting-started/image-preview",
 				zhLabel: "圖片預覽"
+			},
+			{
+				label: "File Picker",
+				slug: "getting-started/file-picker",
+				zhLabel: "檔案選擇器"
 			}
 		]
 	},
