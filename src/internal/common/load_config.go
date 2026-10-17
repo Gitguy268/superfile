@@ -27,6 +27,9 @@ import (
 // theme_dark based on the terminal's detected background color.
 const ThemeAuto = "auto"
 
+// Backgrounds with HSL lightness below this count as dark
+const darkBackgroundMaxLightness = 0.5
+
 // Load configurations from the configuration file. Compares the content
 // with the default values and modify the config file to include default configs
 // if the FixConfigFile flag is on
@@ -258,7 +261,7 @@ func isDarkColor(bg color.Color, err error) bool {
 		return true
 	}
 	_, _, l := col.Hsl()
-	return l < 0.5
+	return l < darkBackgroundMaxLightness
 }
 
 // LoadThemeFile : Load configurations from theme file into &theme

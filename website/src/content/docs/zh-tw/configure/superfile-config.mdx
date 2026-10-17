@@ -24,7 +24,15 @@ $EDITOR config_path
 
 - ###### theme
 
-[點這裡](/zh-tw/configure/custom-theme)查看編輯 theme 的說明。
+[點這裡](/zh-tw/configure/custom-theme)查看編輯 theme 的說明。 設為 `"auto"` 時，superfile 會在啟動時偵測終端機背景色，並自動在 `theme_light` 與 `theme_dark` 之間切換。
+
+- ###### theme_light
+
+當 `theme` 為 `"auto"` 且終端機背景為淺色時使用的 theme。其他情況下會被忽略。
+
+- ###### theme_dark
+
+當 `theme` 為 `"auto"` 且終端機背景為深色時使用的 theme。其他情況下會被忽略。若無法偵測終端機背景色，也會使用此 theme。
 
 - ###### editor
 
