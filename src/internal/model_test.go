@@ -472,3 +472,34 @@ func TestUnlockErrorModalMutex(t *testing.T) {
 		assert.Contains(t, actual, "ERROR TEST")
 	})
 }
+
+// #928: panels with 300+ items are re-read at most every 3 seconds, which must not
+// delay search or sort results
+func TestSearchAndSortApplyImmediatelyInLargeDirectory(t *testing.T) {
+	curTestDir := filepath.Join(testDir, "TestSearchAndSortApplyImmediatelyInLargeDirectory")
+	utils.SetupDirectories(t, curTestDir)
+	t.Cleanup(func() {
+		os.RemoveAll(curTestDir)
+	})
+	files := []string{filepath.Join(curTestDir, "needle.txt")}
+	for i := range 400 {
+		files = append(files, filepath.Join(curTestDir, fmt.Sprintf("file_%03d.txt", i)))
+	}
+	utils.SetupFiles(t, files...)
+
+	m := defaultTestModel(curTestDir)
+	TeaUpdate(m, nil)
+	panel := m.getFocusedFilePanel()
+	require.Equal(t, 401, panel.ElemCount())
+	firstBefore := panel.GetFirstElement().Name
+
+	TeaUpdate(m, utils.TeaRuneKeyMsg(common.Hotkeys.ToggleReverseSort[0]))
+	assert.NotEqual(t, firstBefore, panel.GetFirstElement().Name, "reverse sort should apply at once")
+
+	TeaUpdate(m, utils.TeaRuneKeyMsg(common.Hotkeys.SearchBar[0]))
+	for _, r := range "needle" {
+		TeaUpdate(m, utils.TeaRuneKeyMsg(string(r)))
+	}
+	require.Equal(t, "needle", panel.SearchBar.Value())
+	assert.Equal(t, 1, panel.ElemCount(), "search results should apply at once")
+}

@@ -39,8 +39,16 @@ type Model struct {
 	Renaming           bool
 	SearchBar          textinput.Model
 	LastTimeGetElement time.Time
+	lastFetch          fetchInputs        // search and sort used for the current element list
 	TargetFile         string             // filename to position cursor on after load
 	columns            []columnDefinition // columns for rendering
+}
+
+// Inputs that change which elements are listed, other than the directory itself
+type fetchInputs struct {
+	search       string
+	sortKind     sortmodel.SortKind
+	sortReversed bool
 }
 
 // Record for directory navigation

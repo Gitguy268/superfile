@@ -142,10 +142,18 @@ func (m *Model) renderSelectBox(isSelected bool) string {
 	return common.CheckboxEmpty
 }
 
-// Checks whether a panel needs re-render due to being invalid or due to directory change
+// Checks whether a panel needs re-render due to being invalid, a directory change,
+// or a search/sort change since the last fetch
 func (m *Model) NeedsReRender() bool {
+	if m.currentFetchInputs() != m.lastFetch {
+		return true
+	}
 	if !m.EmptyOrInvalid() {
 		return filepath.Dir(m.GetFirstElement().Location) != m.Location
 	}
 	return true
+}
+
+func (m *Model) currentFetchInputs() fetchInputs {
+	return fetchInputs{search: m.SearchBar.Value(), sortKind: m.SortKind, sortReversed: m.SortReversed}
 }

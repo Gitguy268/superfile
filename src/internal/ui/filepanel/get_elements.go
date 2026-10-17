@@ -92,6 +92,7 @@ func (m *Model) UpdateElementsIfNeeded(force bool, displayDotFile bool) {
 		m.element = m.getElements(displayDotFile)
 		// Update file panel list
 		m.LastTimeGetElement = nowTime
+		m.lastFetch = m.currentFetchInputs()
 
 		// For hover to file on first time loading
 		if m.TargetFile != "" {
