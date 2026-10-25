@@ -393,6 +393,11 @@ func TestUndoDelete(t *testing.T) {
 	assert.Eventually(t, m.notifyModel.IsOpen, DefaultTestTimeout, DefaultTestTick)
 	p.Send(tea.KeyPressMsg{Code: tea.KeyEnter})
 	verifyPathNotExistsEventually(t, file, "File was never moved to the trash")
+	// The file leaves before the delete result reaches the model
+	assert.Eventually(t, func() bool { return len(m.trashUndo) == 1 },
+		DefaultTestTimeout, DefaultTestTick, "Trashed file was never recorded for undo")
+	trashedPath := m.trashUndo[0][0].TrashedPath
+	t.Cleanup(func() { _ = os.RemoveAll(trashedPath) })
 
 	p.SendKey(common.Hotkeys.UndoDelete[0])
 	assert.Eventually(t, func() bool {
