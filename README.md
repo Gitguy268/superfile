@@ -25,6 +25,15 @@ New in this fork:
 | Binaries whose names look like man pages (`bin.3`) are no longer previewed as text | [#933](https://github.com/yorukot/superfile/issues/933) |
 | File picker docs for `--chooser-file` | [#1023](https://github.com/yorukot/superfile/issues/1023) |
 
+Ideas from [walk](https://github.com/antonmedv/walk) (MIT, credited in [NOTICE.md](NOTICE.md)):
+
+| Change | Details |
+| --- | --- |
+| Jump to the first or last item | `g` / `home` and `G` / `end` (`list_top`, `list_bottom`) |
+| Undo the last move to trash | `u` (`undo_delete`); each press restores one batch further back. Not on Windows |
+| Show only directories | `spf --dir-only` |
+| `cd "$(spf --print-last-dir)"` works | With stdout captured, the UI (and config warnings) go to stderr. See the `lk` shell function in the [config docs](website/src/content/docs/configure/superfile-config.mdx) |
+
 Build it from source with `./build.sh` (needs Go 1.26 or newer); the binary ends up in `./bin/spf`. `make build` also runs golangci-lint, so it needs that installed.
 
 </details>

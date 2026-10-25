@@ -122,6 +122,29 @@ Example command to enable - `Set-ExecutionPolicy -ExecutionPolicy RemoteSigned`
 
 :::
 
+##### Without cd_on_quit: a `cd` replacement
+
+`spf --print-last-dir` prints the folder you were in when you quit. When its output is captured, superfile draws its UI on stderr, so only the folder ends up in the capture. Combined with `--dir-only`, which hides files, this turns superfile into a quick `cd` replacement, like [walk](https://github.com/antonmedv/walk)'s `lk`. Every way of quitting prints the folder, so you always end up where you were looking.
+
+Bash or Zsh:
+
+```bash
+lk() {
+    local dir
+    dir="$(command spf --print-last-dir --dir-only "$@")" && [ -n "$dir" ] && cd -- "$dir"
+}
+```
+
+Fish:
+
+```fish
+function lk
+    set -l dir (command spf --print-last-dir --dir-only $argv); and test -n "$dir"; and cd $dir
+end
+```
+
+Leave out `--dir-only` to see files as well.
+
 - ###### default_open_file_preview
 
 `true` => Shows the file preview window when you run superfile.

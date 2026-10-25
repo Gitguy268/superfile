@@ -53,7 +53,7 @@ func LoadConfigFile() {
 		if toExit {
 			utils.PrintfAndExitf("%s\n", userMsg)
 		} else {
-			fmt.Println(userMsg)
+			fmt.Fprintln(utils.TerminalOutput(), userMsg)
 		}
 	}
 
@@ -189,7 +189,7 @@ func LoadHotkeysFile(ignoreMissingFields bool) {
 		if toExit {
 			utils.PrintfAndExitf("%s\n", userMsg)
 		} else {
-			fmt.Println(userMsg)
+			fmt.Fprintln(utils.TerminalOutput(), userMsg)
 		}
 	}
 
