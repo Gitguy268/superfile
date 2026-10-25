@@ -234,10 +234,12 @@ func makeDeleteProcessor(process processbar.Process,
 func (m *model) getUndoDeleteCmd() tea.Cmd {
 	reqID := m.nextIoReqCnt()
 	if len(m.trashUndo) == 0 {
+		content := "Only items moved to the trash in this session can be restored here."
+		if runtime.GOOS == utils.OsWindows {
+			content = "Undo is not supported for the Windows recycle bin. Restore items from there instead."
+		}
 		return func() tea.Msg {
-			return NewNotifyModalMsg(notify.New(true, "Nothing to undo",
-				"Only items moved to the trash in this session can be restored here.",
-				notify.NoAction), reqID)
+			return NewNotifyModalMsg(notify.New(true, "Nothing to undo", content, notify.NoAction), reqID)
 		}
 	}
 	batch := m.trashUndo[len(m.trashUndo)-1]
