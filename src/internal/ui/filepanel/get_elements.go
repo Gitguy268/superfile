@@ -3,10 +3,12 @@ package filepanel
 import (
 	"log/slog"
 	"os"
+	"path/filepath"
 	"slices"
 	"strings"
 	"time"
 
+	variable "github.com/yorukot/superfile/src/config"
 	"github.com/yorukot/superfile/src/pkg/utils"
 )
 
@@ -22,9 +24,7 @@ func (m *Model) getDirectoryElements(displayDotFile bool) []Element {
 	}
 
 	dirEntries = slices.DeleteFunc(dirEntries, func(e os.DirEntry) bool {
-		// Entries not needed to be considered
-		_, err := e.Info()
-		return err != nil || (strings.HasPrefix(e.Name(), ".") && !displayDotFile)
+		return skipEntry(m.Location, e, displayDotFile, variable.DirOnly)
 	})
 
 	// No files/directories to process
@@ -47,11 +47,7 @@ func (m *Model) getDirectoryElementsBySearch(displayDotFile bool) []Element {
 	fileAndDirectories := []string{}
 
 	for _, item := range items {
-		fileInfo, err := item.Info()
-		if err != nil {
-			continue
-		}
-		if !displayDotFile && strings.HasPrefix(fileInfo.Name(), ".") {
+		if skipEntry(m.Location, item, displayDotFile, variable.DirOnly) {
 			continue
 		}
 
@@ -71,6 +67,26 @@ func (m *Model) getDirectoryElementsBySearch(displayDotFile bool) []Element {
 	}
 
 	return sortFileElement(m.SortKind, m.SortReversed, dirElements, m.Location)
+}
+
+// skipEntry reports whether a directory entry should be left out of the panel:
+// unreadable entries, dotfiles when they are hidden, and anything that is not a
+// directory (or a symlink to one) when dirOnly is set.
+func skipEntry(location string, e os.DirEntry, displayDotFile bool, dirOnly bool) bool {
+	if _, err := e.Info(); err != nil {
+		return true
+	}
+	if !displayDotFile && strings.HasPrefix(e.Name(), ".") {
+		return true
+	}
+	if !dirOnly || e.IsDir() {
+		return false
+	}
+	if e.Type()&os.ModeSymlink == 0 {
+		return true
+	}
+	info, err := os.Stat(filepath.Join(location, e.Name()))
+	return err != nil || !info.IsDir()
 }
 
 // Helper to decide whether to skip updating a panel this tick.

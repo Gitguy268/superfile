@@ -1,11 +1,15 @@
 package filepanel
 
 import (
+	"os"
 	"path/filepath"
 	"testing"
 	"time"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
+
+	variable "github.com/yorukot/superfile/src/config"
 
 	"github.com/yorukot/superfile/src/pkg/utils"
 
@@ -285,4 +289,32 @@ func TestSingleItemSelect(t *testing.T) {
 			assert.Equal(t, tt.expectedSelected, tt.panel.selected)
 		})
 	}
+}
+
+func TestDirOnly(t *testing.T) {
+	curTestDir := t.TempDir()
+	utils.SetupDirectories(t, filepath.Join(curTestDir, "sub"), filepath.Join(curTestDir, ".hiddenDir"))
+	utils.SetupFiles(t, filepath.Join(curTestDir, "file.txt"))
+	require.NoError(t, os.Symlink(filepath.Join(curTestDir, "sub"), filepath.Join(curTestDir, "linkToSub")))
+	require.NoError(t, os.Symlink(filepath.Join(curTestDir, "file.txt"), filepath.Join(curTestDir, "linkToFile")))
+
+	variable.SetDirOnly(true)
+	t.Cleanup(func() { variable.SetDirOnly(false) })
+
+	panel := testModel(0, 0, 0, BrowserMode, nil)
+	panel.Location = curTestDir
+	panel.SortKind = sortmodel.SortByName
+
+	names := func(elems []Element) []string {
+		res := []string{}
+		for _, e := range elems {
+			res = append(res, e.Name)
+		}
+		return res
+	}
+	assert.ElementsMatch(t, []string{"sub", "linkToSub"}, names(panel.getDirectoryElements(false)))
+	assert.ElementsMatch(t, []string{"sub", "linkToSub", ".hiddenDir"}, names(panel.getDirectoryElements(true)))
+
+	panel.SearchBar.SetValue("i")
+	assert.ElementsMatch(t, []string{"linkToSub"}, names(panel.getDirectoryElementsBySearch(false)))
 }

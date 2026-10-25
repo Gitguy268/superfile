@@ -106,6 +106,12 @@ func Run(content embed.FS) {
 				Usage:   "Print the last dir to stdout on exit (to use for cd)",
 				Value:   false,
 			},
+			&cli.BoolFlag{
+				Name:    "dir-only",
+				Aliases: []string{"do"},
+				Usage:   "Show only directories in the file panels",
+				Value:   false,
+			},
 			&cli.StringFlag{
 				Name:    "config-file",
 				Aliases: []string{"c"},
