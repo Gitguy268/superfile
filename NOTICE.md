@@ -1,9 +1,9 @@
 # Notices
 
+
 ## Ideas from other projects
 
 - [walk](https://github.com/antonmedv/walk) by Anton Medvedev (MIT): jumping to the first or last item with `g`/`home` and `G`/`end`, the `--dir-only` flag, drawing the UI on stderr so `cd "$(spf --print-last-dir)"` works, and undoing a delete with `u`. These were written fresh for superfile; no walk code was copied.
-
 
 ## OVERVIEW
 
