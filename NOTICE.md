@@ -4935,8 +4935,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 ## github.com/urfave/cli/v3
 
-- Version: v3.9.0
-- License: [MIT](https://github.com/urfave/cli/blob/v3.9.0/LICENSE)
+- Version: v3.10.1
+- License: [MIT](https://github.com/urfave/cli/blob/v3.10.1/LICENSE)
 
 ```text
 MIT License
@@ -5031,6 +5031,7 @@ SOFTWARE.
 MIT License
 
 Copyright (c) 2024 - Yorukot
+Copyright (c) 2026 Lucas Van De Weerd
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
