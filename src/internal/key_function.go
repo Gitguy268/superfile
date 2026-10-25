@@ -70,6 +70,16 @@ func (m *model) mainKey(msg string) tea.Cmd { //nolint: gocyclo,cyclop,funlen,go
 			// These panels have no page scrolling, so page keys do nothing.
 		}
 
+	case slices.Contains(common.Hotkeys.ListTop, msg):
+		if m.focusPanel == nonePanelFocus {
+			m.getFocusedFilePanel().ListTop()
+		}
+
+	case slices.Contains(common.Hotkeys.ListBottom, msg):
+		if m.focusPanel == nonePanelFocus {
+			m.getFocusedFilePanel().ListBottom()
+		}
+
 	case slices.Contains(common.Hotkeys.ChangePanelMode, msg):
 		m.getFocusedFilePanel().ChangeFilePanelMode()
 

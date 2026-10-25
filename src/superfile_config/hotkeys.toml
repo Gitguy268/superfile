@@ -23,6 +23,8 @@ list_down = ['down', 'j']
 list_up = ['up', 'k']
 page_down = ['pgdown','']
 page_up = ['pgup','']
+list_top = ['g', 'home']
+list_bottom = ['G', 'end']
 
 #-- File Panel Controls
 close_file_panel = ['w', '']

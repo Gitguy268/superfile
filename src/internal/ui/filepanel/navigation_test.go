@@ -442,3 +442,20 @@ func TestPageScrollSizeConfig(t *testing.T) {
 		})
 	}
 }
+
+func TestListTopAndBottom(t *testing.T) {
+	m := testModelWithElemCount(5, 0, 12, 30)
+
+	m.ListBottom()
+	assert.Equal(t, 29, m.GetCursor())
+	assert.NoError(t, m.ValidateCursorAndRenderIndex())
+
+	m.ListTop()
+	assert.Equal(t, 0, m.GetCursor())
+	assert.NoError(t, m.ValidateCursorAndRenderIndex())
+
+	empty := testModelWithElemCount(0, 0, 12, 0)
+	empty.ListTop()
+	empty.ListBottom()
+	assert.Equal(t, 0, empty.GetCursor())
+}

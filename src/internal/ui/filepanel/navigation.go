@@ -62,6 +62,16 @@ func (m *Model) PgDown() {
 	m.pageScrollBy(m.getPageScrollSize())
 }
 
+// ListTop moves the cursor to the first item
+func (m *Model) ListTop() {
+	m.pageScrollBy(-m.ElemCount())
+}
+
+// ListBottom moves the cursor to the last item
+func (m *Model) ListBottom() {
+	m.pageScrollBy(m.ElemCount())
+}
+
 // Handles the action of selecting an item in the file panel upwards. (only work on select mode)
 // This basically just toggles the "selected" status of element that is pointed by the cursor
 // and then moves the cursor up
