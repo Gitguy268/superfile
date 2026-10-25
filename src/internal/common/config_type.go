@@ -156,6 +156,7 @@ type HotkeysType struct {
 	CutItems               []string `toml:"cut_items"`
 	DeleteItems            []string `toml:"delete_items"`
 	PermanentlyDeleteItems []string `toml:"permanently_delete_items"`
+	UndoDelete             []string `toml:"undo_delete"`
 
 	CopyToSystemClipboard    []string `toml:"copy_to_system_clipboard"`
 	PasteFromSystemClipboard []string `toml:"paste_from_system_clipboard"`

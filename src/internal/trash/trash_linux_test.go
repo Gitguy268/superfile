@@ -142,3 +142,19 @@ func TestMoveRejectsTrashSymlink(t *testing.T) {
 	require.Error(t, err)
 	assert.FileExists(t, src)
 }
+
+func TestMoveThenRestore(t *testing.T) {
+	t.Setenv("XDG_DATA_HOME", t.TempDir())
+
+	src := filepath.Join(t.TempDir(), "dir")
+	require.NoError(t, os.MkdirAll(filepath.Join(src, "child"), 0o755))
+
+	result, err := Move(src)
+	require.NoError(t, err)
+	assert.FileExists(t, result.InfoPath)
+
+	require.NoError(t, Restore(result))
+	assert.DirExists(t, filepath.Join(src, "child"))
+	assert.NoFileExists(t, result.InfoPath)
+	assert.NoDirExists(t, result.TrashedPath)
+}

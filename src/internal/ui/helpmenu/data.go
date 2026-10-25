@@ -259,6 +259,11 @@ func getData() []hotkeydata { //nolint: funlen // This should be self contained
 			hotkeyWorkType: globalType,
 		},
 		{
+			hotkey:         common.Hotkeys.UndoDelete,
+			description:    "Undo the last move to trash",
+			hotkeyWorkType: globalType,
+		},
+		{
 			hotkey:         common.Hotkeys.CopyPath,
 			description:    "Copy current or selected file/directory paths",
 			hotkeyWorkType: globalType,

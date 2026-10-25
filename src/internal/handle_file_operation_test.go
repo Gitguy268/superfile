@@ -505,7 +505,9 @@ func cleanupWithRetry(t *testing.T, path, label string) {
 func TestRunFileProcessorMutex(t *testing.T) {
 	t.Run("The mutex mutexErrorModal must be locked before run processor ", func(t *testing.T) {
 		m := prepareLockUnlockTest(t)
-		finalizer := func(state processbar.ProcessState, reqID int) tea.Msg { return NewDeleteOperationMsg(state, reqID) }
+		finalizer := func(state processbar.ProcessState, reqID int) tea.Msg {
+			return NewDeleteOperationMsg(state, reqID, nil)
+		}
 		processor := func(items []string) (processbar.Process, []string) {
 			assert.False(t, m.mutexErrorModal.TryLock())
 			return processbar.NewProcess("1", "test", processbar.OpCopy, 10), []string{}
@@ -516,7 +518,9 @@ func TestRunFileProcessorMutex(t *testing.T) {
 	t.Run("The mutex mutexErrorModal must be unlocked after successful processing. We can see new Error modal window",
 		func(t *testing.T) {
 			m := prepareLockUnlockTest(t)
-			finalizer := func(state processbar.ProcessState, reqID int) tea.Msg { return NewDeleteOperationMsg(state, reqID) }
+			finalizer := func(state processbar.ProcessState, reqID int) tea.Msg {
+				return NewDeleteOperationMsg(state, reqID, nil)
+			}
 			processor := func(items []string) (processbar.Process, []string) {
 				assert.False(t, m.mutexErrorModal.TryLock())
 				process := processbar.NewProcess("1", "test", processbar.OpCopy, 10)
@@ -532,7 +536,9 @@ func TestRunFileProcessorMutex(t *testing.T) {
 	t.Run("Failed processing. we have todo files. mutexErrorModal must be locked. Waits user choice",
 		func(t *testing.T) {
 			m := prepareLockUnlockTest(t)
-			finalizer := func(state processbar.ProcessState, reqID int) tea.Msg { return NewDeleteOperationMsg(state, reqID) }
+			finalizer := func(state processbar.ProcessState, reqID int) tea.Msg {
+				return NewDeleteOperationMsg(state, reqID, nil)
+			}
 			processor := func(items []string) (processbar.Process, []string) {
 				assert.False(t, m.mutexErrorModal.TryLock())
 				process := processbar.NewProcess("1", "test", processbar.OpCopy, 10)
@@ -548,7 +554,9 @@ func TestRunFileProcessorMutex(t *testing.T) {
 	t.Run("The mutex mutexErrorModal must be unlocked after failed processing, when we haven't todo files",
 		func(t *testing.T) {
 			m := prepareLockUnlockTest(t)
-			finalizer := func(state processbar.ProcessState, reqID int) tea.Msg { return NewDeleteOperationMsg(state, reqID) }
+			finalizer := func(state processbar.ProcessState, reqID int) tea.Msg {
+				return NewDeleteOperationMsg(state, reqID, nil)
+			}
 			processor := func(items []string) (processbar.Process, []string) {
 				assert.False(t, m.mutexErrorModal.TryLock())
 				process := processbar.NewProcess("1", "test", processbar.OpCopy, 10)

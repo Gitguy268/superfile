@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 
 	"github.com/yorukot/superfile/src/internal/common"
 )
@@ -448,11 +449,11 @@ func TestListTopAndBottom(t *testing.T) {
 
 	m.ListBottom()
 	assert.Equal(t, 29, m.GetCursor())
-	assert.NoError(t, m.ValidateCursorAndRenderIndex())
+	require.NoError(t, m.ValidateCursorAndRenderIndex())
 
 	m.ListTop()
 	assert.Equal(t, 0, m.GetCursor())
-	assert.NoError(t, m.ValidateCursorAndRenderIndex())
+	require.NoError(t, m.ValidateCursorAndRenderIndex())
 
 	empty := testModelWithElemCount(0, 0, 12, 0)
 	empty.ListTop()

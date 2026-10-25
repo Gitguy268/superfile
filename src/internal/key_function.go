@@ -22,7 +22,7 @@ import (
 // check the state of model m and handle properly.
 // TODO: This function has grown too big. It needs to be fixed, via major
 // updates and fixes in key handling code
-func (m *model) mainKey(msg string) tea.Cmd { //nolint: gocyclo,cyclop,funlen,gocognit // See above
+func (m *model) mainKey(msg string) tea.Cmd { //nolint: gocyclo,cyclop,funlen,gocognit,maintidx // See above
 	switch {
 	// If move up Key is pressed, check the current state and executes
 	case slices.Contains(common.Hotkeys.ListUp, msg):
@@ -221,6 +221,8 @@ func (m *model) filePanelSelectModeKey(msg string) tea.Cmd {
 		return m.getDeleteTriggerCmd(false)
 	case slices.Contains(common.Hotkeys.PermanentlyDeleteItems, msg):
 		return m.getDeleteTriggerCmd(true)
+	case slices.Contains(common.Hotkeys.UndoDelete, msg):
+		return m.getUndoDeleteCmd()
 	case slices.Contains(common.Hotkeys.CopyItems, msg):
 		m.copyMultipleItem(false)
 	case slices.Contains(common.Hotkeys.CutItems, msg):
@@ -251,6 +253,8 @@ func (m *model) filePanelNormalModeKey(msg string) tea.Cmd {
 		return m.getDeleteTriggerCmd(false)
 	case slices.Contains(common.Hotkeys.PermanentlyDeleteItems, msg):
 		return m.getDeleteTriggerCmd(true)
+	case slices.Contains(common.Hotkeys.UndoDelete, msg):
+		return m.getUndoDeleteCmd()
 	case slices.Contains(common.Hotkeys.CopyItems, msg):
 		m.copySingleItem(false)
 	case slices.Contains(common.Hotkeys.CutItems, msg):

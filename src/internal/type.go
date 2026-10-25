@@ -18,6 +18,8 @@ import (
 	"github.com/yorukot/superfile/src/internal/ui/processbar"
 	"github.com/yorukot/superfile/src/internal/ui/sidebar"
 
+	"github.com/yorukot/superfile/src/internal/trash"
+
 	"charm.land/bubbles/v2/textinput"
 
 	"github.com/yorukot/superfile/src/internal/ui/prompt"
@@ -98,6 +100,10 @@ type model struct {
 
 	// whether usable trash directory exists or not
 	hasTrash bool
+
+	// Batches of items moved to the trash in this session, newest last.
+	// undo_delete pops one batch and restores it.
+	trashUndo [][]trash.Result
 
 	// whether the OS clipboard can transfer real files/directories
 	hasSystemClipboard bool

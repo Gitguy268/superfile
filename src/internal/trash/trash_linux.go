@@ -79,6 +79,7 @@ func Move(path string) (Result, error) {
 	return Result{
 		OriginalPath:     srcAbs,
 		TrashedPath:      filepath.Join(td.files, trashName),
+		InfoPath:         infoPath,
 		Backend:          BackendFreeDesktop,
 		StrictlyRecycled: true,
 	}, nil
@@ -408,6 +409,11 @@ func isInsideKnownTrash(path string) bool {
 func isPathWithin(path, root string) bool {
 	rel, err := filepath.Rel(root, path)
 	return err == nil && (rel == "." || (rel != ".." && !strings.HasPrefix(rel, ".."+string(filepath.Separator))))
+}
+
+// restoreMove can cross filesystems, since a file may have gone to the home trash
+func restoreMove(src, dst string) error {
+	return movePath(src, dst)
 }
 
 func movePath(src, dst string) error {

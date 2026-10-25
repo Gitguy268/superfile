@@ -167,22 +167,28 @@ func (m *model) getDeleteCmd(permDelete bool) tea.Cmd {
 
 func (m *model) deleteOperation(processBarModel *processbar.Model, items []string, useTrash bool, reqID int) tea.Msg {
 	if len(items) == 0 {
-		return NewDeleteOperationMsg(processbar.Cancelled, reqID)
+		return NewDeleteOperationMsg(processbar.Cancelled, reqID, nil)
 	}
 	p, err := processBarModel.SendAddProcessMsg(filepath.Base(items[0]), processbar.OpDelete, len(items), true)
 	if err != nil {
 		slog.Error("Cannot spawn a new process", "error", err)
-		return NewDeleteOperationMsg(processbar.Failed, reqID)
+		return NewDeleteOperationMsg(processbar.Failed, reqID, nil)
 	}
-	finalizer := func(state processbar.ProcessState, reqID int) tea.Msg { return NewDeleteOperationMsg(state, reqID) }
-	processor := makeDeleteProcessor(p, processBarModel, useTrash)
+	// Filled by the processor, also when it is retried from the error modal
+	var trashed []trash.Result
+	finalizer := func(state processbar.ProcessState, reqID int) tea.Msg {
+		return NewDeleteOperationMsg(state, reqID, trashed)
+	}
+	processor := makeDeleteProcessor(p, processBarModel, useTrash, &trashed)
 	msg := m.runFileProcessor(processor, finalizer, items, reqID)
 	return msg
 }
 
+// makeDeleteProcessor deletes items or moves them to the trash. Items that were
+// moved to the trash and can be put back are appended to trashed.
 func makeDeleteProcessor(process processbar.Process,
 	processBarModel *processbar.Model,
-	useTrash bool) processbar.FileListProcessor {
+	useTrash bool, trashed *[]trash.Result) processbar.FileListProcessor {
 	processorFunction := func(items []string) (processbar.Process, []string) {
 		notProcessed := make([]string, 0)
 		if len(items) == 0 {
@@ -192,7 +198,10 @@ func makeDeleteProcessor(process processbar.Process,
 		deleteFunc := os.RemoveAll
 		if useTrash {
 			deleteFunc = func(item string) error {
-				_, err := trash.Move(item)
+				result, err := trash.Move(item)
+				if err == nil && result.TrashedPath != "" && trashed != nil {
+					*trashed = append(*trashed, result)
+				}
 				return err
 			}
 		}
@@ -217,6 +226,34 @@ func makeDeleteProcessor(process processbar.Process,
 		return process, notProcessed
 	}
 	return processorFunction
+}
+
+// getUndoDeleteCmd puts the most recent batch of trashed items back where they
+// were. The batch is taken off the undo stack on the update loop, the moves
+// happen inside the returned command.
+func (m *model) getUndoDeleteCmd() tea.Cmd {
+	reqID := m.nextIoReqCnt()
+	if len(m.trashUndo) == 0 {
+		return func() tea.Msg {
+			return NewNotifyModalMsg(notify.New(true, "Nothing to undo",
+				"Only items moved to the trash in this session can be restored here.",
+				notify.NoAction), reqID)
+		}
+	}
+	batch := m.trashUndo[len(m.trashUndo)-1]
+	m.trashUndo = m.trashUndo[:len(m.trashUndo)-1]
+	return func() tea.Msg {
+		msg := UndoDeleteMsg{BaseMessage: BaseMessage{reqID: reqID}}
+		for _, item := range batch {
+			if err := trash.Restore(item); err != nil {
+				slog.Error("Error while restoring from trash", "item", item.OriginalPath, "error", err)
+				msg.errMsgs = append(msg.errMsgs, filepath.Base(item.OriginalPath)+": "+err.Error())
+				continue
+			}
+			msg.restored = append(msg.restored, item)
+		}
+		return msg
+	}
 }
 
 func (m *model) getDeleteTriggerCmd(deletePermanent bool) tea.Cmd {

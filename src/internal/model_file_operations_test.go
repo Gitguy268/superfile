@@ -368,3 +368,38 @@ func TestFileDelete(t *testing.T) {
 		})
 	}
 }
+
+func TestUndoDelete(t *testing.T) {
+	if runtime.GOOS == utils.OsWindows {
+		t.Skip("Windows does not report where the recycle bin put an item")
+	}
+	curTestDir := t.TempDir()
+	file := filepath.Join(curTestDir, "undo me.txt")
+	utils.SetupFilesWithData(t, []byte("keep"), file)
+
+	m := defaultTestModel(curTestDir)
+	m.hasTrash = common.InitTrash()
+	p := NewTestTeaProgWithEventLoop(t, m)
+
+	// Nothing trashed yet
+	p.SendKey(common.Hotkeys.UndoDelete[0])
+	assert.Eventually(t, m.notifyModel.IsOpen, DefaultTestTimeout, DefaultTestTick)
+	assert.Equal(t, "Nothing to undo", m.notifyModel.GetTitle())
+	p.Send(tea.KeyPressMsg{Code: tea.KeyEscape})
+	assert.Eventually(t, func() bool { return !m.notifyModel.IsOpen() }, DefaultTestTimeout, DefaultTestTick)
+
+	setFilePanelSelectedItemByLocation(t, m.getFocusedFilePanel(), file)
+	p.SendKey(common.Hotkeys.DeleteItems[0])
+	assert.Eventually(t, m.notifyModel.IsOpen, DefaultTestTimeout, DefaultTestTick)
+	p.Send(tea.KeyPressMsg{Code: tea.KeyEnter})
+	verifyPathNotExistsEventually(t, file, "File was never moved to the trash")
+
+	p.SendKey(common.Hotkeys.UndoDelete[0])
+	assert.Eventually(t, func() bool {
+		data, err := os.ReadFile(file)
+		return err == nil && string(data) == "keep"
+	}, DefaultTestTimeout, DefaultTestTick, "File was never restored")
+	assert.Eventually(t, func() bool {
+		return m.getFocusedFilePanel().GetFocusedItem().Location == file
+	}, DefaultTestTimeout, DefaultTestTick, "Cursor should land on the restored file")
+}

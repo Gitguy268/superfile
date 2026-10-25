@@ -24,7 +24,7 @@ import (
 )
 
 // Run superfile app
-func Run(content embed.FS) {
+func Run(content embed.FS) { //nolint:funlen // Mostly the CLI flag definitions
 	// Enable custom colored help output
 	cli.HelpPrinter = CustomHelpPrinter //nolint:reassign // Intentionally reassigning to customize help output
 

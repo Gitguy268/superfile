@@ -2,9 +2,12 @@ package internal
 
 import (
 	"log/slog"
+	"path/filepath"
+	"strings"
 
 	tea "charm.land/bubbletea/v2"
 
+	"github.com/yorukot/superfile/src/internal/trash"
 	"github.com/yorukot/superfile/src/internal/ui/metadata"
 	"github.com/yorukot/superfile/src/internal/ui/notify"
 	"github.com/yorukot/superfile/src/internal/ui/processbar"
@@ -71,11 +74,14 @@ type DeleteOperationMsg struct {
 	BaseMessage
 
 	state processbar.ProcessState
+	// items that went to the trash and can be restored with undo_delete
+	trashed []trash.Result
 }
 
-func NewDeleteOperationMsg(state processbar.ProcessState, reqID int) DeleteOperationMsg {
+func NewDeleteOperationMsg(state processbar.ProcessState, reqID int, trashed []trash.Result) DeleteOperationMsg {
 	return DeleteOperationMsg{
-		state: state,
+		state:   state,
+		trashed: trashed,
 		BaseMessage: BaseMessage{
 			reqID: reqID,
 		},
@@ -85,7 +91,35 @@ func NewDeleteOperationMsg(state processbar.ProcessState, reqID int) DeleteOpera
 func (msg DeleteOperationMsg) ApplyToModel(m *model) tea.Cmd {
 	// Remove selection
 	m.getFocusedFilePanel().ResetSelected()
+	if len(msg.trashed) > 0 {
+		m.trashUndo = append(m.trashUndo, msg.trashed)
+	}
 	return nil
+}
+
+type UndoDeleteMsg struct {
+	BaseMessage
+
+	restored []trash.Result
+	errMsgs  []string
+}
+
+func (msg UndoDeleteMsg) ApplyToModel(m *model) tea.Cmd {
+	panel := m.getFocusedFilePanel()
+	for _, r := range msg.restored {
+		if filepath.Dir(r.OriginalPath) == panel.Location {
+			panel.TargetFile = filepath.Base(r.OriginalPath)
+			break
+		}
+	}
+	m.fileModel.UpdateFilePanelsIfNeeded(true)
+	if len(msg.errMsgs) == 0 {
+		return nil
+	}
+	content := strings.Join(msg.errMsgs, "\n") + "\n\nThese items are still in the trash."
+	return func() tea.Msg {
+		return NewNotifyModalMsg(notify.New(true, "Could not restore everything", content, notify.NoAction), msg.reqID)
+	}
 }
 
 type ProcessBarUpdateMsg struct {
