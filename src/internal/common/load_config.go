@@ -270,7 +270,7 @@ func isDarkColor(bg color.Color, err error) bool {
 func LoadThemeFile() {
 	themeName := Config.Theme
 	if themeName == ThemeAuto {
-		bg, err := lipgloss.BackgroundColor(os.Stdin, os.Stdout)
+		bg, err := lipgloss.BackgroundColor(os.Stdin, utils.TerminalOutput())
 		if ShouldWarnAutoDetectFailed(Config.Theme, bg, err) {
 			fmt.Fprintln(os.Stderr, "Warning: theme = \"auto\" could not detect your terminal's "+
 				"background color, so superfile is falling back to theme_dark. This can happen over "+

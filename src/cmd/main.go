@@ -157,7 +157,10 @@ func spfAppAction(_ context.Context, c *cli.Command) error {
 
 	firstUse := checkFirstUse()
 
-	p := tea.NewProgram(internal.InitialModel(firstPanelPaths, firstUse))
+	p := tea.NewProgram(
+		internal.InitialModel(firstPanelPaths, firstUse),
+		tea.WithOutput(utils.TerminalOutput()),
+	)
 	if _, err := p.Run(); err != nil {
 		utils.PrintfAndExitf("Alas, there's been an error: %v", err)
 	}
@@ -319,15 +322,17 @@ func fetchLatestRelease(ctx context.Context) (*http.Response, error) {
 }
 
 func notifyUpdateAvailable(latest string) {
-	fmt.Println(
-		lipgloss.NewStyle().Foreground(lipgloss.Color("#FF69E1")).Render("┃ ") +
-			lipgloss.NewStyle().Foreground(lipgloss.Color("#FFBA52")).Bold(true).Render("A new version ") +
-			lipgloss.NewStyle().Foreground(lipgloss.Color("#00FFF2")).Bold(true).Italic(true).Render(latest) +
+	// Keep stdout clean for --print-last-dir when the UI was drawn on stderr
+	out := utils.TerminalOutput()
+	fmt.Fprintln(out,
+		lipgloss.NewStyle().Foreground(lipgloss.Color("#FF69E1")).Render("┃ ")+
+			lipgloss.NewStyle().Foreground(lipgloss.Color("#FFBA52")).Bold(true).Render("A new version ")+
+			lipgloss.NewStyle().Foreground(lipgloss.Color("#00FFF2")).Bold(true).Italic(true).Render(latest)+
 			lipgloss.NewStyle().Foreground(lipgloss.Color("#FFBA52")).Bold(true).Render(" is available."),
 	)
-	fmt.Printf(
+	fmt.Fprintf(out,
 		lipgloss.NewStyle().Foreground(lipgloss.Color("#FF69E1")).Render("┃ ")+"Please update.\n┏\n\n      => %s\n\n",
 		variable.LatestVersionGithub,
 	)
-	fmt.Println("                                                               ┛")
+	fmt.Fprintln(out, "                                                               ┛")
 }
