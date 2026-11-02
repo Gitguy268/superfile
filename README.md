@@ -65,6 +65,33 @@ Build it from source with `./build.sh` (needs Go 1.26 or newer); the binary ends
 
 </div>
 
+<!-- run-steps:start -->
+## Run it locally, step by step
+
+1. **Install [Go](https://go.dev/dl/) 1.26** or newer.
+
+2. **Get the code:**
+
+   ```sh
+   git clone https://github.com/Gitguy268/superfile.git
+   cd superfile
+   ```
+
+3. **Build it:**
+
+   ```sh
+   go build -o bin/spf .
+   ```
+
+4. **Run it:**
+
+   ```sh
+   ./bin/spf
+   ```
+
+   Press `q` to quit.
+<!-- run-steps:end -->
+
 ## Demo
 
 | Perform common operations  |
