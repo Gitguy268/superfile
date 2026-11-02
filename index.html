@@ -1,0 +1,354 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>superfile</title>
+<meta name="description" content="[!NOTE]
+This is a fork of yorukot/superfile by Lucas Van De Weerd. It follows upstream and adds the fixes and features below. Everything else in this README is ">
+<style>
+:root { color-scheme: light dark; --bg:#fff; --fg:#1f2328; --muted:#59636e; --line:#d1d9e0; --code:#f6f8fa; --link:#0550ae; }
+@media (prefers-color-scheme: dark) { :root { --bg:#0d1117; --fg:#e6edf3; --muted:#9198a1; --line:#30363d; --code:#161b22; --link:#79c0ff; } }
+* { box-sizing: border-box; }
+body { margin:0; background:var(--bg); color:var(--fg); font:16px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif; }
+main { max-width:860px; margin:0 auto; padding:24px 16px 64px; overflow-wrap:break-word; }
+.bar { display:flex; justify-content:space-between; gap:12px; flex-wrap:wrap; padding-bottom:12px; margin-bottom:24px; border-bottom:1px solid var(--line); font-size:14px; color:var(--muted); }
+a { color:var(--link); }
+img { max-width:100%; height:auto; }
+pre { background:var(--code); padding:14px 16px; border-radius:8px; overflow:auto; }
+code { background:var(--code); padding:.15em .35em; border-radius:4px; font:.88em ui-monospace,SFMono-Regular,Menlo,monospace; }
+pre code { background:none; padding:0; }
+table { display:block; overflow:auto; border-collapse:collapse; }
+th,td { border:1px solid var(--line); padding:6px 12px; text-align:left; }
+blockquote { margin:16px 0; padding:0 16px; border-left:4px solid var(--line); color:var(--muted); }
+h1,h2 { border-bottom:1px solid var(--line); padding-bottom:.3em; line-height:1.25; }
+summary { cursor:pointer; font-weight:600; }
+</style>
+</head>
+<body>
+<main>
+<div class="bar"><span>Project page</span><a href="https://github.com/Gitguy268/superfile">View on GitHub</a></div>
+<blockquote>
+<p>[!NOTE]
+This is a fork of <a href="https://github.com/yorukot/superfile">yorukot/superfile</a> by Lucas Van De Weerd. It follows upstream and adds the fixes and features below. Everything else in this README is upstream&#39;s.</p>
+</blockquote>
+<details>
+<summary><b>What this fork changes</b></summary>
+
+<p>Merged from open upstream pull requests (original authors kept on the commits):</p>
+<table>
+<thead>
+<tr>
+<th>Change</th>
+<th>Upstream issue / PR</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Nix flake builds again (pins Go 1.26)</td>
+<td><a href="https://github.com/yorukot/superfile/issues/1634">#1634</a> / <a href="https://github.com/yorukot/superfile/pull/1635">#1635</a></td>
+</tr>
+<tr>
+<td><code>cd_on_quit</code> asks <code>spf</code> for the lastdir path, so it works with any install and <code>XDG_STATE_HOME</code></td>
+<td><a href="https://github.com/yorukot/superfile/issues/1274">#1274</a> / <a href="https://github.com/yorukot/superfile/pull/1629">#1629</a></td>
+</tr>
+<tr>
+<td><code>bat_flags</code> config option for the bat previewer</td>
+<td><a href="https://github.com/yorukot/superfile/issues/1193">#1193</a> / <a href="https://github.com/yorukot/superfile/pull/1584">#1584</a></td>
+</tr>
+<tr>
+<td><code>theme = &quot;auto&quot;</code> picks <code>theme_light</code> or <code>theme_dark</code> from the terminal background</td>
+<td><a href="https://github.com/yorukot/superfile/issues/468">#468</a> / <a href="https://github.com/yorukot/superfile/pull/1500">#1500</a></td>
+</tr>
+<tr>
+<td>Copy and paste files through the system clipboard (<code>C</code> / <code>V</code>)</td>
+<td><a href="https://github.com/yorukot/superfile/issues/741">#741</a> / <a href="https://github.com/yorukot/superfile/pull/1607">#1607</a></td>
+</tr>
+<tr>
+<td>Cut and paste no longer overwrites a same-named file</td>
+<td><a href="https://github.com/yorukot/superfile/pull/1593">#1593</a></td>
+</tr>
+</tbody></table>
+<p>New in this fork:</p>
+<table>
+<thead>
+<tr>
+<th>Change</th>
+<th>Upstream issue</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Copy (<code>T</code>) or move (<code>M</code>) items straight into the next panel</td>
+<td><a href="https://github.com/yorukot/superfile/issues/135">#135</a></td>
+</tr>
+<tr>
+<td><code>terminal</code> theme that uses your terminal&#39;s 16-color palette</td>
+<td><a href="https://github.com/yorukot/superfile/issues/681">#681</a></td>
+</tr>
+<tr>
+<td>Search and sort results show up at once in folders with 300+ files</td>
+<td><a href="https://github.com/yorukot/superfile/issues/928">#928</a></td>
+</tr>
+<tr>
+<td>Binaries whose names look like man pages (<code>bin.3</code>) are no longer previewed as text</td>
+<td><a href="https://github.com/yorukot/superfile/issues/933">#933</a></td>
+</tr>
+<tr>
+<td>File picker docs for <code>--chooser-file</code></td>
+<td><a href="https://github.com/yorukot/superfile/issues/1023">#1023</a></td>
+</tr>
+</tbody></table>
+<p>Ideas from <a href="https://github.com/antonmedv/walk">walk</a> (MIT, credited in <a href="https://github.com/Gitguy268/superfile/blob/improvements/NOTICE.md">NOTICE.md</a>):</p>
+<table>
+<thead>
+<tr>
+<th>Change</th>
+<th>Details</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Jump to the first or last item</td>
+<td><code>g</code> / <code>home</code> and <code>G</code> / <code>end</code> (<code>list_top</code>, <code>list_bottom</code>)</td>
+</tr>
+<tr>
+<td>Undo the last move to trash</td>
+<td><code>u</code> (<code>undo_delete</code>); each press restores one batch further back. Not on Windows</td>
+</tr>
+<tr>
+<td>Show only directories</td>
+<td><code>spf --dir-only</code></td>
+</tr>
+<tr>
+<td><code>cd &quot;$(spf --print-last-dir)&quot;</code> works</td>
+<td>With stdout captured, the UI (and config warnings) go to stderr. See the <code>lk</code> shell function in the <a href="https://github.com/Gitguy268/superfile/blob/improvements/website/src/content/docs/configure/superfile-config.mdx">config docs</a></td>
+</tr>
+</tbody></table>
+<p>Build it from source with <code>./build.sh</code> (needs Go 1.26 or newer); the binary ends up in <code>./bin/spf</code>. <code>make build</code> also runs golangci-lint, so it needs that installed.</p>
+</details>
+
+<div align="center">
+
+<h4>superfile is supported by the community.</h4>
+
+<a href="https://ko-fi.com/yorukot">
+  <img alt="Donate to superfile on Ko-fi" src="https://ko-fi.com/img/githubbutton_sm.svg">
+</a>
+
+<hr>
+
+</div>
+
+<div align="center">
+<br>
+<picture>
+  <source width="300" media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/Gitguy268/superfile/improvements/website/src/assets/superfile-night.svg" />
+  <source width="300" media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/Gitguy268/superfile/improvements/website/src/assets/superfile-day.svg" />
+  <img alt="superfile LOGO" src="https://raw.githubusercontent.com/Gitguy268/superfile/improvements/website/src/assets/superfile-day.svg" />
+</picture>
+<br><br>
+
+<p><a href="https://raw.githubusercontent.com/yorukot/superfile/refs/heads/main/LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="License MIT"></a> <a href="https://discord.gg/YYtJ23Du7B"><img src="https://img.shields.io/discord/1338415256875307110?label=discord&logo=discord&logoColor=white" alt="Discord Link"></a> <a href="https://github.com/yorukot/superfile/releases/latest"><img src="https://img.shields.io/github/v/release/yorukot/superfile.svg?style=flat-square" alt="Release"></a> <img src="https://img.shields.io/homebrew/installs/dy/superfile?label=Homebrew" alt="Homebrew downloads"> <img src="https://img.shields.io/github/downloads/yorukot/superfile/total?label=GitHub%20downloads%20assets%2Freleases" alt="GitHub downloads"> <a href="https://www.coderabbit.ai/"><img src="https://img.shields.io/coderabbit/prs/github/yorukot/superfile?utm_source=oss&utm_medium=github&utm_campaign=yorukot%2Fsuperfile&labelColor=171717&color=FF570A&&label=CodeRabbit+Reviews" alt="CodeRabbit Pull Request Reviews"></a></p>
+<p><img src="https://raw.githubusercontent.com/Gitguy268/superfile/improvements/website/src/assets/demo.png" alt=""></p>
+</div>
+
+<!-- live-links -->
+<p><strong>Project page:</strong> <a href="https://gitguy268.github.io/superfile/">gitguy268.github.io/superfile</a> · <a href="https://superfile-jade.vercel.app">superfile-jade.vercel.app</a></p>
+<!-- /live-links -->
+
+<!-- run-steps:start -->
+<h2 id="run-it-locally-step-by-step">Run it locally, step by step</h2>
+<ol>
+<li><p><strong>Install <a href="https://go.dev/dl/">Go</a> 1.26</strong> or newer.</p>
+</li>
+<li><p><strong>Get the code:</strong></p>
+<pre><code class="language-sh">git clone https://github.com/Gitguy268/superfile.git
+cd superfile
+</code></pre>
+</li>
+<li><p><strong>Build it:</strong></p>
+<pre><code class="language-sh">go build -o bin/spf .
+</code></pre>
+</li>
+<li><p><strong>Run it:</strong></p>
+<pre><code class="language-sh">./bin/spf
+</code></pre>
+<p>Press <code>q</code> to quit.</p>
+</li>
+</ol>
+<!-- run-steps:end -->
+
+<h2 id="demo">Demo</h2>
+<table>
+<thead>
+<tr>
+<th>Perform common operations</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><img src="https://raw.githubusercontent.com/Gitguy268/superfile/improvements/asset/readme/demo.gif" alt=""></td>
+</tr>
+</tbody></table>
+<h2 id="content">Content</h2>
+<ul>
+<li><a href="#demo">Demo</a></li>
+<li><a href="#content">Content</a></li>
+<li><a href="#installation">Installation</a><ul>
+<li><a href="#macos-and-linux">macOS and Linux</a></li>
+<li><a href="#windows">Windows</a><ul>
+<li><a href="#powershell">Powershell</a></li>
+<li><a href="#winget">Winget</a></li>
+<li><a href="#scoop">Scoop</a></li>
+</ul>
+</li>
+<li><a href="#more-installation-methods">More installation methods</a></li>
+</ul>
+</li>
+<li><a href="#build">Build</a><ul>
+<li><a href="#for-macoslinux">For macOS/Linux</a></li>
+<li><a href="#for-windows">For Windows</a></li>
+</ul>
+</li>
+<li><a href="#start-superfile">Start superfile</a></li>
+<li><a href="#supported-systems">Supported Systems</a></li>
+<li><a href="#tutorial">Tutorial</a></li>
+<li><a href="#plugins">Plugins</a></li>
+<li><a href="#themes">Themes</a></li>
+<li><a href="#hotkeys">Hotkeys</a></li>
+<li><a href="#notes">Notes</a></li>
+<li><a href="#troubleshooting">Troubleshooting</a></li>
+<li><a href="#uninstalling">Uninstalling</a><ul>
+<li><a href="#macos-and-linux-1">macOS and Linux</a></li>
+<li><a href="#windows">Windows</a></li>
+</ul>
+</li>
+<li><a href="#contributing">Contributing</a></li>
+<li><a href="#thanks">Thanks</a><ul>
+<li><a href="#support">Support</a></li>
+<li><a href="#core-maintainer">Core maintainer</a></li>
+<li><a href="#contributors">Contributors</a></li>
+<li><a href="#powered-by">Powered by</a></li>
+<li><a href="#star-history">Star History</a></li>
+</ul>
+</li>
+<li><a href="#-%E3%81%A4-_-%E3%81%A4-please-share">༼ つ ◕_◕ ༽つ Please share.</a></li>
+</ul>
+<h2 id="installation">Installation</h2>
+<h3 id="macos-and-linux">macOS and Linux</h3>
+<pre><code class="language-bash">bash -c &quot;$(curl -sLo- https://superfile.dev/install.sh)&quot;
+</code></pre>
+<p>If you want to inspect the script, see : <a href="https://github.com/Gitguy268/superfile/blob/improvements/website/public/install.sh">install.sh</a></p>
+<h3 id="windows">Windows</h3>
+<h4 id="powershell">Powershell</h4>
+<pre><code class="language-powershell">powershell -ExecutionPolicy Bypass -Command &quot;Invoke-Expression ((New-Object System.Net.WebClient).DownloadString(&#39;https://superfile.dev/install.ps1&#39;))&quot;
+</code></pre>
+<p>If you want to inspect the script, see : <a href="https://github.com/Gitguy268/superfile/blob/improvements/website/public/install.ps1">install.ps1</a></p>
+<h4 id="winget"><a href="https://winget.run/">Winget</a></h4>
+<pre><code class="language-powershell">winget install --id yorukot.superfile
+</code></pre>
+<h4 id="scoop"><a href="https://scoop.sh/">Scoop</a></h4>
+<pre><code>scoop install superfile
+</code></pre>
+<h3 id="more-installation-methods">More installation methods</h3>
+<p><a href="https://superfile.dev/getting-started/installation/">Click me to check on how to install</a></p>
+<h2 id="build">Build</h2>
+<p>You can build the source code yourself by using these steps:</p>
+<p><strong>Requirements</strong></p>
+<ul>
+<li><a href="https://go.dev/doc/install">golang</a></li>
+</ul>
+<p><strong>Build Steps</strong></p>
+<p>Clone this repository using the following command:</p>
+<pre><code>git clone https://github.com/yorukot/superfile.git --depth=1
+</code></pre>
+<p>Enter the downloaded directory:</p>
+<pre><code class="language-bash">cd superfile
+</code></pre>
+<h3 id="for-macoslinux">For macOS/Linux</h3>
+<p>Run the <code>build.sh</code> file:</p>
+<pre><code class="language-bash">./build.sh
+</code></pre>
+<p>Add the binary file to your $PATH, e.g., in <code>/usr/local/bin</code>:</p>
+<pre><code class="language-bash">sudo mv ./bin/spf /usr/local/bin
+</code></pre>
+<h3 id="for-windows">For Windows</h3>
+<pre><code class="language-bash">go build -o bin/spf.exe
+</code></pre>
+<p>Edit System Environment Variables and add superfile repo&#39;s <code>bin</code> directory to your PATH</p>
+<h2 id="start-superfile">Start superfile</h2>
+<pre><code class="language-bash">spf
+</code></pre>
+<h2 id="supported-systems">Supported Systems</h2>
+<ul>
+<li>[x] Linux</li>
+<li>[x] macOS</li>
+<li>[x] Windows (Not fully supported yet)</li>
+</ul>
+<h2 id="tutorial">Tutorial</h2>
+<p>After you install superfile, you can go <a href="https://superfile.dev/getting-started/tutorial/">here</a> to briefly understand how to use superfile!</p>
+<h2 id="plugins">Plugins</h2>
+<p><a href="https://superfile.dev/list/plugin-list/">Click me to the plugins wiki</a></p>
+<h2 id="themes">Themes</h2>
+<p><a href="https://superfile.dev/configure/custom-theme/">Click me to the theme wiki</a></p>
+<h2 id="hotkeys">Hotkeys</h2>
+<blockquote>
+<p>[!WARNING] If you are vim/nvim user please change your default hotkeys config to vim version!</p>
+</blockquote>
+<p><a href="https://superfile.dev/configure/custom-hotkeys/"><strong>Click me to see the hotkey wiki</strong></a></p>
+<h2 id="notes">Notes</h2>
+<p>We have an auto update functionality, that fetches superfile&#39;s latest released version from github (if last timestamp of last version check was less than 24 hours) and prints a prompt to user, if there is a newer version available.</p>
+<p>You can turn this off, by setting <code>auto_check_update</code> to false in superfile config. <a href="https://superfile.dev/configure/superfile-config/"><strong>Click me to see the config wiki</strong></a></p>
+<h2 id="troubleshooting">Troubleshooting</h2>
+<p><a href="https://superfile.dev/troubleshooting/"><strong>Click me to see common problem fix</strong></a></p>
+<h2 id="uninstalling">Uninstalling</h2>
+<h3 id="macos-and-linux-1">macOS and Linux</h3>
+<pre><code class="language-bash">bash -c &quot;$(curl -sLo- https://superfile.dev/uninstall.sh)&quot;
+</code></pre>
+<p>If you want to inspect the script, see : <a href="https://github.com/Gitguy268/superfile/blob/improvements/website/public/uninstall.sh">uninstall.sh</a></p>
+<h3 id="windows-1">Windows</h3>
+<p>To uninstall superfile on Windows, use this powershell script.</p>
+<pre><code class="language-powershell">powershell -ExecutionPolicy Bypass -Command &quot;Invoke-Expression ((New-Object System.Net.WebClient).DownloadString(&#39;https://superfile.dev/uninstall.ps1&#39;))&quot;
+</code></pre>
+<h2 id="contributing">Contributing</h2>
+<p>If you want to contribute please follow the <a href="https://github.com/Gitguy268/superfile/blob/improvements/CONTRIBUTING.md">contribution guide</a></p>
+<p><a href="https://superfile.dev/changelog"><strong>Click me to see changelog</strong></a></p>
+<h2 id="thanks">Thanks</h2>
+<h3 id="support">Support</h3>
+<ul>
+<li>a Star on my GitHub repository would be nice 🌟</li>
+<li>You can buy a coffee for me 💖</li>
+</ul>
+<p><a href="https://ko-fi.com/G2G1JEGGC"><img src="https://ko-fi.com/img/githubbutton_sm.svg" alt="ko-fi"></a></p>
+<h3 id="core-maintainer">Core maintainer</h3>
+<blockquote>
+<p>We welcome anyone who wants to become a core maintainer. Feel free to reach out!</p>
+</blockquote>
+<ul>
+<li><strong><a href="https://github.com/yorukot">@yorukot</a></strong> - Original author and maintainer</li>
+<li><strong><a href="https://github.com/lazysegtree">@lazysegtree</a></strong> - Core maintainer</li>
+</ul>
+<h3 id="contributors">Contributors</h3>
+<p><strong>Thanks to all the contributors for making this project even greater!</strong></p>
+<a href="https://github.com/yorukot/superfile/graphs/contributors">
+  <img src="https://gthanks.yorukot.me/image?target=yorukot%2Fsuperfile" />
+</a>
+
+<h3 id="powered-by">Powered by</h3>
+<p><a href="https://jb.gg/OpenSource"><img alt="JetBrains logo" align="right" width="200" src="https://resources.jetbrains.com/storage/products/company/brand/logos/jetbrains.svg"></a></p>
+<p>Thanks to JetBrains team for providing open-source licenses to support the maintenance of superfile.</p>
+<h3 id="star-history">Star History</h3>
+<p><strong>THANKS FOR All OF YOUR STARS!</strong> Your stars are my motivation to keep updating!</p>
+<a href="https://www.star-history.com/?repos=yorukot%2Fsuperfile&type=date&legend=top-left">
+ <picture>
+   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/chart?repos=yorukot/superfile&type=date&theme=dark&legend=top-left&sealed_token=nEoMOYsfp1zwZ7rT-Fm6VR2yTa6cwW35VR0BwVxTuE8Dt17vRcRIQUFXeWdh6lZixlAl5e_fIVFs2Xe4cRdvAnexR5Q6JqlGVZK05Iu0mko8gYLjTdjq0g" />
+   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/chart?repos=yorukot/superfile&type=date&legend=top-left&sealed_token=nEoMOYsfp1zwZ7rT-Fm6VR2yTa6cwW35VR0BwVxTuE8Dt17vRcRIQUFXeWdh6lZixlAl5e_fIVFs2Xe4cRdvAnexR5Q6JqlGVZK05Iu0mko8gYLjTdjq0g" />
+   <img alt="Star History Chart" src="https://api.star-history.com/chart?repos=yorukot/superfile&type=date&legend=top-left&sealed_token=nEoMOYsfp1zwZ7rT-Fm6VR2yTa6cwW35VR0BwVxTuE8Dt17vRcRIQUFXeWdh6lZixlAl5e_fIVFs2Xe4cRdvAnexR5Q6JqlGVZK05Iu0mko8gYLjTdjq0g" />
+ </picture>
+</a>
+
+<div align="center">
+
+<h2 id="つ-つ-please-share">༼ つ ◕_◕ ༽つ Please share.</h2>
+</div>
+
+</main>
+</body>
+</html>
