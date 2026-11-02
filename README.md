@@ -65,6 +65,10 @@ Build it from source with `./build.sh` (needs Go 1.26 or newer); the binary ends
 
 </div>
 
+<!-- live-links -->
+**Project page:** [gitguy268.github.io/superfile](https://gitguy268.github.io/superfile/) · [superfile-jade.vercel.app](https://superfile-jade.vercel.app)
+<!-- /live-links -->
+
 <!-- run-steps:start -->
 ## Run it locally, step by step
 
