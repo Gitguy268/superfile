@@ -69,6 +69,15 @@ Build it from source with `./build.sh` (needs Go 1.26 or newer); the binary ends
 **Project page:** [gitguy268.github.io/superfile](https://gitguy268.github.io/superfile/) · [superfile-jade.vercel.app](https://superfile-jade.vercel.app)
 <!-- /live-links -->
 
+## Install with Homebrew
+
+```sh
+brew trust gitguy268/tap
+brew install gitguy268/tap/superfile-plus
+```
+
+Installs `spf`. It conflicts with homebrew-core's `superfile`, which installs the same command.
+
 <!-- run-steps:start -->
 ## Run it locally, step by step
 
