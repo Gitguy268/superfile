@@ -31,7 +31,7 @@ func (m *Model) getDirectoryElements(displayDotFile bool) []Element {
 	if len(dirEntries) == 0 {
 		return nil
 	}
-	return sortFileElement(m.SortKind, m.SortReversed, dirEntries, m.Location)
+	return m.sortFileElements(dirEntries, displayDotFile)
 }
 
 // getDirectoryElementsBySearch returns filtered directory elements based on search string
@@ -66,7 +66,7 @@ func (m *Model) getDirectoryElementsBySearch(displayDotFile bool) []Element {
 		dirElements = append(dirElements, resultItem)
 	}
 
-	return sortFileElement(m.SortKind, m.SortReversed, dirElements, m.Location)
+	return m.sortFileElements(dirElements, displayDotFile)
 }
 
 // skipEntry reports whether a directory entry should be left out of the panel:
