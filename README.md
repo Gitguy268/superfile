@@ -1,5 +1,5 @@
 > [!NOTE]
-> This is a fork of [yorukot/superfile](https://github.com/yorukot/superfile) by Lucas Van De Weerd. It follows upstream and adds the fixes and features below. Everything else in this README is upstream's.
+> This is a fork of [yorukot/superfile](https://github.com/yorukot/superfile) by Lucas Van De Weerd. It follows upstream (last synced on 2026-11-15 with upstream `main` at [`2328e2e`](https://github.com/yorukot/superfile/commit/2328e2ecb643ac11198e7a39555484388dfa4785), which includes directory item counts in the size column) and adds the fixes and features below. Everything else in this README is upstream's.
 
 <details>
 <summary><b>What this fork changes</b></summary>
